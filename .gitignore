@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment variables / secrets
+.env
+.env.*
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+
+# Keep Terraform provider lock file
+!.terraform.lock.hcl
+
+# Local data
+data/*
+!data/.gitkeep
+
+# IDE
+.vscode/
+.idea/
