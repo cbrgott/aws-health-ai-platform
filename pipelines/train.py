@@ -4,10 +4,7 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-
+from sklearn.ensemble import RandomForestClassifier
 
 # SageMaker provides these directories as environment variables
 TRAIN_DIR = Path(os.environ.get("SM_CHANNEL_TRAIN", "data/processed"))
@@ -23,13 +20,13 @@ def main():
     y_train = train_df["target"]
 
     # Define model pipeline
-    model = Pipeline([
-        ("scaler", StandardScaler()),
-        ("classifier", LogisticRegression(
-            max_iter=1000,
-            random_state=42
-        ))
-    ])
+    model = RandomForestClassifier(
+        n_estimators=300,
+        max_depth=None,
+        min_samples_split=2,
+        min_samples_leaf=4,
+        random_state=42,
+    )
 
     # Train
     model.fit(X_train, y_train)

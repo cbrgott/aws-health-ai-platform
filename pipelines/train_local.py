@@ -1,6 +1,8 @@
 from pathlib import Path
 import joblib
+from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
@@ -51,17 +53,49 @@ def main():
         ))
     ])
 
-    # Train
-    logistic_model.fit(X_train, y_train)
+    random_forest = RandomForestClassifier(
+        random_state=42
+    )
 
-    # Validation
+    param_grid = {
+        "n_estimators": [100, 200, 300],
+        "max_depth": [None, 3, 5, 8],
+        "min_samples_split": [2, 5, 10],
+        "min_samples_leaf": [1, 2, 4],
+    }
+
+    grid_search = GridSearchCV(
+        estimator=random_forest,
+        param_grid=param_grid,
+        scoring="roc_auc",
+        cv=5,
+        n_jobs=-1,
+    )
+    logistic_model.fit(X_train, y_train)
+    grid_search.fit(X_train, y_train)
+
+    best_random_forest = grid_search.best_estimator_
+
+    print("\nBest Random Forest parameters:")
+    print(grid_search.best_params_)
+
+    print("\n--- VALIDATION COMPARISON ---")
+
     evaluate_model(
-        "Validation",
+        "Logistic Regression",
         logistic_model,
         X_validation,
         y_validation,
     )
 
+    evaluate_model(
+        "Tuned Random Forest",
+        best_random_forest,
+        X_validation,
+        y_validation,
+    )
+
+    print(f"Best CV ROC-AUC: {grid_search.best_score_:.4f}")
     # Final test
     evaluate_model(
         "Test",
@@ -70,6 +104,12 @@ def main():
         y_test,
     )
 
+    evaluate_model(
+        "Tuned Random Forest - Test",
+        best_random_forest,
+        X_test,
+        y_test,
+    )
     # Save model
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
