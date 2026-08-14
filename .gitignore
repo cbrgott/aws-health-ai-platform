@@ -27,3 +27,6 @@ data/*
 # IDE
 .vscode/
 .idea/
+
+# Local model artifacts
+models/
