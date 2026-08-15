@@ -30,3 +30,10 @@ data/*
 
 # Local model artifacts
 models/
+
+# WSL virtual environment
+.venv-wsl/
+
+# AWS CLI installer
+aws/
+awscliv2.zip

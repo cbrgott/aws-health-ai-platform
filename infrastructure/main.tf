@@ -76,3 +76,26 @@ resource "aws_iam_role_policy" "sagemaker_s3_access" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "sagemaker_cloudwatch_logs" {
+  name = "aws-health-ai-sagemaker-cloudwatch-logs"
+  role = aws_iam_role.sagemaker_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+
+        Resource = "*"
+      }
+    ]
+  })
+}
