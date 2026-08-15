@@ -13,8 +13,10 @@ ROLE_ARN = "arn:aws:iam::528162482936:role/aws-health-ai-sagemaker-execution-rol
 INSTANCE_TYPE = "ml.m5.large"
 
 
-def main():
-
+def build_training_args(
+    sagemaker_session,
+    training_data,
+):
     # Source code configuration
     source_code = SourceCode(
         source_dir="pipelines",
@@ -28,17 +30,7 @@ def main():
         volume_size_in_gb=10,
     )
 
-    # S3 training input
-    training_data = InputData(
-        channel_name="train",
-        data_source=(
-            f"s3://{PROJECT_BUCKET}/"
-            "ml/heart-disease/train/"
-        ),
-        content_type="text/csv",
-    )
-
-    # AWS-managed SageMaker scikit-learn training image
+    # AWS-managed SageMaker scikit-learn image
     training_image = image_uris.retrieve(
         framework="sklearn",
         region=REGION,
@@ -46,18 +38,6 @@ def main():
         py_version="py3",
         instance_type=INSTANCE_TYPE,
         image_scope="training",
-    )
-
-    # Explicit AWS profile/session
-    boto_session = boto3.Session(
-        profile_name="cristhian-dev",
-        region_name=REGION,
-    )
-
-    sagemaker_session = Session(
-        boto_session=boto_session,
-        default_bucket=PROJECT_BUCKET,
-        default_bucket_prefix="ml/heart-disease",
     )
 
     # Model artifact output
@@ -79,12 +59,46 @@ def main():
         sagemaker_session=sagemaker_session,
     )
 
-    # Launch training
-    trainer.train(
+    # Return training job arguments
+    training_args = trainer.train(
         input_data_config=[training_data],
-        wait=True,
+        wait=False,
         logs=False,
     )
+
+    return training_args
+
+
+def main():
+    # Explicit AWS profile/session
+    boto_session = boto3.Session(
+        profile_name="cristhian-dev",
+        region_name=REGION,
+    )
+
+    sagemaker_session = Session(
+        boto_session=boto_session,
+        default_bucket=PROJECT_BUCKET,
+        default_bucket_prefix="ml/heart-disease",
+    )
+
+    # Standalone S3 training input
+    training_data = InputData(
+        channel_name="train",
+        data_source=(
+            f"s3://{PROJECT_BUCKET}/"
+            "ml/heart-disease/train/"
+        ),
+        content_type="text/csv",
+    )
+
+    training_args = build_training_args(
+        sagemaker_session=sagemaker_session,
+        training_data=training_data,
+    )
+
+    print("Training job submitted.")
+    print(training_args)
 
 
 if __name__ == "__main__":

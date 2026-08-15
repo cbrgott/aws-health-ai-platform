@@ -2,10 +2,15 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from pathlib import Path
+import os
 
-DATA_PATH = "data/processed.cleveland.data"
-OUTPUT_DIR = Path("data/processed")
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+INPUT_DIR = Path(
+    os.getenv("SM_PROCESSING_INPUT_DIR", "data")
+)
+OUTPUT_DIR = Path(
+    os.getenv("SM_PROCESSING_OUTPUT_DIR", "data/processed")
+)
+INPUT_FILE = INPUT_DIR / "processed.cleveland.data"
 
 COLUMNS = [
     "age",
@@ -25,7 +30,7 @@ COLUMNS = [
 ]
 
 df = pd.read_csv(
-    DATA_PATH,
+    INPUT_FILE,
     names=COLUMNS,
     na_values="?"
 )
@@ -109,9 +114,6 @@ validation_df["target"] = y_validation
 test_df = X_test.copy()
 test_df["target"] = y_test
 
-from pathlib import Path
-
-OUTPUT_DIR = Path("data/processed")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 train_df.to_csv(OUTPUT_DIR / "train.csv", index=False)

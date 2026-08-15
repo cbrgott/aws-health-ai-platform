@@ -99,3 +99,64 @@ resource "aws_iam_role_policy" "sagemaker_cloudwatch_logs" {
     ]
   })
 }
+resource "aws_iam_role_policy" "sagemaker_pass_role" {
+  name = "aws-health-ai-sagemaker-pass-role"
+  role = aws_iam_role.sagemaker_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Action = [
+          "iam:PassRole"
+        ]
+
+        Resource = aws_iam_role.sagemaker_execution.arn
+
+        Condition = {
+          StringEquals = {
+            "iam:PassedToService" = "sagemaker.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "sagemaker_pipeline_actions" {
+  name = "aws-health-ai-sagemaker-pipeline-actions"
+  role = aws_iam_role.sagemaker_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Action = [
+          "sagemaker:AddTags",
+
+          "sagemaker:CreateProcessingJob",
+          "sagemaker:DescribeProcessingJob",
+          "sagemaker:StopProcessingJob",
+
+          "sagemaker:CreateTrainingJob",
+          "sagemaker:DescribeTrainingJob",
+          "sagemaker:StopTrainingJob",
+
+          "sagemaker:CreateModelPackage",
+          "sagemaker:DescribeModelPackage",
+
+          "sagemaker:CreateModelPackageGroup",
+          "sagemaker:DescribeModelPackageGroup"
+        ]
+
+        Resource = "*"
+      }
+    ]
+  })
+}
