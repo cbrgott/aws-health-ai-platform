@@ -10,10 +10,10 @@ PROFILE = "cristhian-dev"
 
 MODEL_PACKAGE_ARN = (
     "arn:aws:sagemaker:us-east-1:528162482936:"
-    "model-package/aws-health-ai-heart-disease-models/1"
+    "model-package/aws-health-ai-heart-disease-models/3"
 )
 
-MODEL_NAME = "aws-health-ai-heart-disease-v1"
+MODEL_NAME = "aws-health-ai-heart-disease-v3"
 
 ROLE_ARN = (
     "arn:aws:iam::528162482936:"
