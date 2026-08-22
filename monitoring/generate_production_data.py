@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-BASELINE_FILE = "monitoring/train_features.csv"
+BASELINE_FILE = "data/monitoring/train_features.csv"
 
 NORMAL_OUTPUT = "monitoring/production_normal.csv"
 DRIFTED_OUTPUT = "monitoring/production_drifted.csv"

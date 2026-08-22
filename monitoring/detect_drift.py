@@ -8,7 +8,7 @@ import pandas as pd
 PROFILE = "cristhian-dev"
 REGION = "us-east-1"
 
-BASELINE_FILE = "monitoring/train_features.csv"
+BASELINE_FILE = "data/monitoring/train_features.csv"
 
 ENDPOINT_NAME = "aws-health-ai-heart-disease-endpoint"
 

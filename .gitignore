@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.venv-wsl/
 
 # Environment variables / secrets
 .env
@@ -24,16 +25,18 @@ crash.*.log
 data/*
 !data/.gitkeep
 
+# Local model artifacts
+models/
+
+# Generated monitoring artifacts
+monitoring/*_batch.json
+monitoring/*_response.json
+monitoring/production_*.csv
+
 # IDE
 .vscode/
 .idea/
 
-# Local model artifacts
-models/
-
-# WSL virtual environment
-.venv-wsl/
-
-# AWS CLI installer
+# AWS CLI local files
 aws/
 awscliv2.zip
