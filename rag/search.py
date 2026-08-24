@@ -6,7 +6,6 @@ from requests_aws4auth import AWS4Auth
 
 ENDPOINT = "https://x16m2ax2gmt70fgkred6.aoss.us-east-1.on.aws"
 INDEX = "heart-disease-guidelines"
-QUESTION = "What are the main recommendations for preventing cardiovascular disease?"
 
 session = boto3.Session(
     profile_name="cristhian-dev",
@@ -25,55 +24,75 @@ auth = AWS4Auth(
 
 bedrock = session.client("bedrock-runtime")
 
-body = json.dumps({
-    "inputText": QUESTION
-})
 
-response = bedrock.invoke_model(
-    modelId="amazon.titan-embed-text-v2:0",
-    contentType="application/json",
-    accept="application/json",
-    body=body,
-)
+def retrieve_documents(question, k=3):
+    body = json.dumps({
+        "inputText": question
+    })
 
-result = json.loads(response["body"].read())
-query_embedding = result["embedding"]
+    response = bedrock.invoke_model(
+        modelId="amazon.titan-embed-text-v2:0",
+        contentType="application/json",
+        accept="application/json",
+        body=body,
+    )
 
-search_body = {
-    "size": 3,
-    "query": {
-        "knn": {
-            "embedding": {
-                "vector": query_embedding,
-                "k": 3
+    result = json.loads(response["body"].read())
+    query_embedding = result["embedding"]
+
+    search_body = {
+        "size": k,
+        "query": {
+            "knn": {
+                "embedding": {
+                    "vector": query_embedding,
+                    "k": k
+                }
             }
-        }
-    },
-    "_source": [
-        "text",
-        "page",
-        "source"
-    ]
-}
+        },
+        "_source": [
+            "text",
+            "page",
+            "source"
+        ]
+    }
 
-response = requests.post(
-    f"{ENDPOINT}/{INDEX}/_search",
-    auth=auth,
-    headers={"Content-Type": "application/json"},
-    json=search_body,
-)
+    response = requests.post(
+        f"{ENDPOINT}/{INDEX}/_search",
+        auth=auth,
+        headers={"Content-Type": "application/json"},
+        json=search_body,
+    )
 
-response.raise_for_status()
-results = response.json()
+    response.raise_for_status()
+    results = response.json()
 
-print(f"\nQuestion: {QUESTION}\n")
+    documents = []
 
-for i, hit in enumerate(results["hits"]["hits"], start=1):
-    source = hit["_source"]
+    for hit in results["hits"]["hits"]:
+        source = hit["_source"]
 
-    print(f"Result {i}")
-    print(f"Score: {hit['_score']}")
-    print(f"Page: {source['page']}")
-    print(f"Source: {source['source']}")
-    print(source["text"])
-    print("-" * 80)
+        documents.append({
+            "text": source["text"],
+            "page": source["page"],
+            "source": source["source"],
+            "score": hit["_score"],
+        })
+
+    return documents
+
+
+if __name__ == "__main__":
+    question = "What are the main recommendations for preventing cardiovascular disease?"
+
+    docs = retrieve_documents(question)
+
+    print(f"\nQuestion: {question}\n")
+
+    for i, doc in enumerate(docs, start=1):
+        print(f"Result {i}")
+        print(f"Score: {doc['score']}")
+        print(f"Page: {doc['page']}")
+        print(f"Source: {doc['source']}")
+        print(doc["text"])
+        print("-" * 80)
