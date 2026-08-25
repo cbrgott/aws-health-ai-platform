@@ -40,3 +40,7 @@ monitoring/production_*.csv
 # AWS CLI local files
 aws/
 awscliv2.zip
+
+# Lambda deployment artifacts
+agent/**/package/
+agent/**/*.zip
