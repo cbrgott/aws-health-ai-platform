@@ -48,6 +48,18 @@ def evaluate_rag(case):
     answer = result["answer"]
     sources = result["sources"]
 
+    scores = [
+        source["score"]
+        for source in sources
+        if "score" in source
+    ]
+
+    average_score = (
+        sum(scores) / len(scores)
+        if scores
+        else 0
+    )
+
     if case["expected_behavior"] == "answer_with_sources":
         passed = bool(answer.strip()) and len(sources) > 0
 
@@ -69,6 +81,8 @@ def evaluate_rag(case):
         "expected": case["expected_behavior"],
         "answer": answer,
         "sources_count": len(sources),
+        "retrieval_scores": scores,
+        "average_retrieval_score": round(average_score, 4),
         "passed": passed,
     }
 

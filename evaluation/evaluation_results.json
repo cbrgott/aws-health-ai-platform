@@ -11,8 +11,14 @@
       "id": "rag_supported_01",
       "capability": "rag",
       "expected": "answer_with_sources",
-      "answer": "The main recommendations for preventing cardiovascular disease, as outlined in the provided context, are:\n\n1. **Promote a Healthy Lifestyle**: The most important way to prevent atherosclerotic vascular disease, heart failure, and atrial fibrillation is to promote a healthy lifestyle throughout life.\n\n2. **Team-Based Care Approach**: A team-based care approach is an effective strategy for the prevention of cardiovascular disease. Clinicians should evaluate the social determinants of health that affect individuals to inform treatment decisions.\n\n3. **10-Year ASCVD Risk Estimation**: Adults who are 40 to 75 years of age and are being evaluated for cardiovascular disease prevention should undergo 10-year atherosclerotic cardiovascular disease (ASCVD) risk estimation and have a clinician-patient risk discussion before starting on pharmacological therapy.\n\n4. **Tobacco Use Assessment**: All adults should be assessed at every healthcare visit for tobacco use, and those who use tobacco should be assisted and strongly advised to quit.\n\n5. **Statin Therapy**: Statin therapy is first-line treatment for primary prevention of ASCVD in patients with elevated low-density lipoprotein cholesterol levels (≥190 mg/dL), those with diabetes mellitus, who are 40 to 75 years of age, and those determined to be at sufficient ASCVD risk after a clinician-patient risk discussion.\n\n6. **Nonpharmacological Interventions**: Nonpharmacological interventions are recommended for all adults with elevated blood pressure or hypertension. For those requiring pharmacological therapy, the target blood pressure should be specified (though the exact target is not provided in the context).\n\n7. **Aspirin Use**: Aspirin should be used infrequently in the routine primary prevention of ASCVD because of lack of net benefit.",
+      "answer": "The main recommendations for preventing cardiovascular disease, as outlined in the provided context, are:\n\n1. Promote a healthy lifestyle throughout life.\n2. Utilize a team-based care approach and evaluate social determinants of health.\n3. For adults aged 40 to 75, undergo 10-year atherosclerotic cardiovascular disease (ASCVD) risk estimation and have a clinician-patient risk discussion before starting pharmacological therapy.\n4. Assess all adults for tobacco use at every healthcare visit and assist and strongly advise those who use tobacco to quit.\n5. Use aspirin infrequently in the routine primary prevention of ASCVD due to lack of net benefit.\n6. Use statin therapy as first-line treatment for primary prevention of ASCVD in specific patient groups.\n7. Recommend nonpharmacological interventions for all adults with elevated blood pressure or hypertension, with pharmacological therapy targeted for those requiring it.",
       "sources_count": 3,
+      "retrieval_scores": [
+        0.8491564,
+        0.8213722,
+        0.81287074
+      ],
+      "average_retrieval_score": 0.8278,
       "passed": true,
       "evaluation_mode": "automated"
     },
@@ -22,6 +28,12 @@
       "expected": "insufficient_context",
       "answer": "The available clinical document does not contain enough information to answer the question about the recommended treatment for kidney cancer.",
       "sources_count": 3,
+      "retrieval_scores": [
+        0.57376313,
+        0.5641497,
+        0.5641014
+      ],
+      "average_retrieval_score": 0.5673,
       "passed": true,
       "evaluation_mode": "automated"
     },

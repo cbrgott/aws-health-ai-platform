@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 from rag.rag import ask_rag
 from app.guardrails import check_input, check_output
+from app.agent import invoke_agent
 
 app = FastAPI(
     title="AWS Health AI Platform",
@@ -13,6 +14,9 @@ app = FastAPI(
 class QuestionRequest(BaseModel):
     question: str
 
+class AgentRequest(BaseModel):
+    user_id: str
+    question: str
 
 @app.get("/health")
 def health():
@@ -58,3 +62,45 @@ def ask(request: QuestionRequest):
         )
 
     return result
+@app.post("/agent")
+def agent(request: AgentRequest):
+
+    if not request.question.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Question cannot be empty."
+        )
+
+    guardrail_result = check_input(request.question)
+
+    if guardrail_result["action"] == "GUARDRAIL_INTERVENED":
+        raise HTTPException(
+            status_code=400,
+            detail="The request was blocked by the clinical safety guardrail."
+        )
+
+    try:
+        answer = invoke_agent(
+                    request.question,
+                    request.user_id
+                )
+        
+    except Exception as exc:
+        print(f"Agent error: {exc}")
+
+        raise HTTPException(
+            status_code=500,
+            detail="The AgentCore service is temporarily unavailable."
+        )
+
+    guardrail_output = check_output(answer)
+
+    if guardrail_output["action"] == "GUARDRAIL_INTERVENED":
+        raise HTTPException(
+            status_code=400,
+            detail="The response was blocked by the clinical safety guardrail."
+        )
+
+    return {
+        "answer": answer
+    }
