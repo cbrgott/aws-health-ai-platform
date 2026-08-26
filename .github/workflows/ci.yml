@@ -55,3 +55,29 @@ jobs:
       - name: Run evaluation
         run: |
           python -m evaluation.evaluate
+
+      - name: Show OIDC subject
+        shell: bash
+        run: |
+          TOKEN_RESPONSE=$(curl -sSf \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com")
+
+          TOKEN=$(echo "$TOKEN_RESPONSE" | python -c \
+            "import sys,json; print(json.load(sys.stdin)['value'])")
+
+          PAYLOAD=$(echo "$TOKEN" | cut -d '.' -f2)
+
+          python - "$PAYLOAD" <<'PY'
+          import sys, json, base64
+
+          payload = sys.argv[1]
+          payload += "=" * (-len(payload) % 4)
+
+          claims = json.loads(
+              base64.urlsafe_b64decode(payload).decode()
+          )
+
+          print("aud:", claims.get("aud"))
+          print("sub:", claims.get("sub"))
+          PY
