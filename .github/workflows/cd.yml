@@ -1,0 +1,62 @@
+name: AWS Health AI CD
+
+on:
+  workflow_run:
+    workflows:
+      - AWS Health AI CI
+    types:
+      - completed
+    branches:
+      - master
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout validated commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_CD_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          docker build \
+            -t $ECR_REGISTRY/${{ vars.ECR_REPOSITORY }}:$IMAGE_TAG \
+            .
+
+      - name: Push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          docker push \
+            $ECR_REGISTRY/${{ vars.ECR_REPOSITORY }}:$IMAGE_TAG
+
+      - name: Deploy to ECS Express Mode
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          aws ecs update-express-gateway-service \
+            --service-arn "${{ vars.ECS_SERVICE_ARN }}" \
+            --primary-container "image=$ECR_REGISTRY/${{ vars.ECR_REPOSITORY }}:$IMAGE_TAG" \
+            --region "${{ vars.AWS_REGION }}"
