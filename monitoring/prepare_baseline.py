@@ -1,12 +1,14 @@
 import boto3
 import pandas as pd
 from io import BytesIO
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
-PROFILE = "cristhian-dev"
-REGION = "us-east-1"
-
-BUCKET = "aws-health-ai-data-3b2f0d9f09215b58379c9aabbd"
+PROFILE = os.environ.get("AWS_PROFILE")
+REGION = os.environ.get("AWS_REGION", "us-east-1")
+BUCKET = os.environ["PROJECT_BUCKET"]
 
 SOURCE_KEY = (
     "ml/heart-disease/pipeline/processed/train.csv"
@@ -18,7 +20,6 @@ DESTINATION_KEY = (
 
 
 session = boto3.Session(
-    profile_name=PROFILE,
     region_name=REGION,
 )
 

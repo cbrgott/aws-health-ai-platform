@@ -5,11 +5,17 @@ from sagemaker.core.training.configs import SourceCode, Compute, InputData
 from sagemaker.core import image_uris
 from sagemaker.core.helper.session_helper import Session
 from sagemaker.core.shapes import OutputDataConfig
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
-REGION = "us-east-1"
-PROJECT_BUCKET = "aws-health-ai-data-3b2f0d9f09215b58379c9aabbd"
-ROLE_ARN = "arn:aws:iam::528162482936:role/aws-health-ai-sagemaker-execution-role"
+REGION = os.environ.get("AWS_REGION", "us-east-1")
+
+PROJECT_BUCKET = os.environ["PROJECT_BUCKET"]
+
+ROLE_ARN = os.environ["SAGEMAKER_ROLE_ARN"]
+
 INSTANCE_TYPE = "ml.m5.large"
 
 

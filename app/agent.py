@@ -1,8 +1,9 @@
 import os
 import uuid
-
 import boto3
+from dotenv import load_dotenv
 
+load_dotenv()
 
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 
@@ -11,7 +12,6 @@ HARNESS_ARN = os.environ.get(
 )
 
 session = boto3.Session(
-    profile_name="cristhian-dev",
     region_name=REGION,
 )
 agentcore = session.client("bedrock-agentcore")

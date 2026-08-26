@@ -5,15 +5,16 @@ from sagemaker.core.model_monitor.model_monitoring import DefaultModelMonitor
 from sagemaker.core.model_monitor.dataset_format import DatasetFormat
 
 
-PROFILE = "cristhian-dev"
-REGION = "us-east-1"
+import os
+from dotenv import load_dotenv
 
-ROLE_ARN = (
-    "arn:aws:iam::528162482936:"
-    "role/aws-health-ai-sagemaker-execution-role"
-)
+load_dotenv()
 
-BUCKET = "aws-health-ai-data-3b2f0d9f09215b58379c9aabbd"
+PROFILE = os.environ.get("AWS_PROFILE")
+REGION = os.environ.get("AWS_REGION", "us-east-1")
+
+ROLE_ARN = os.environ["SAGEMAKER_ROLE_ARN"]
+BUCKET = os.environ["PROJECT_BUCKET"]
 
 BASELINE_DATASET = (
     f"s3://{BUCKET}/"

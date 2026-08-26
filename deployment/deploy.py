@@ -1,24 +1,24 @@
 import boto3
-
+import os
 from sagemaker.core.helper.session_helper import Session
 from sagemaker.core.training.configs import SourceCode
 from sagemaker.serve.model_builder import ModelBuilder
+from dotenv import load_dotenv
 
+load_dotenv()
 
-REGION = "us-east-1"
-PROFILE = "cristhian-dev"
+REGION = os.environ.get("AWS_REGION", "us-east-1")
 
-MODEL_PACKAGE_ARN = (
-    "arn:aws:sagemaker:us-east-1:528162482936:"
-    "model-package/aws-health-ai-heart-disease-models/3"
+PROFILE = os.environ.get("AWS_PROFILE")
+
+MODEL_PACKAGE_ARN = os.environ["MODEL_PACKAGE_ARN"]
+
+MODEL_NAME = os.environ.get(
+    "MODEL_NAME",
+    "aws-health-ai-heart-disease-v3",
 )
 
-MODEL_NAME = "aws-health-ai-heart-disease-v3"
-
-ROLE_ARN = (
-    "arn:aws:iam::528162482936:"
-    "role/aws-health-ai-sagemaker-execution-role"
-)
+ROLE_ARN = os.environ["SAGEMAKER_ROLE_ARN"]
 
 
 # AWS session
@@ -27,7 +27,7 @@ boto_session = boto3.Session(
     region_name=REGION,
 )
 
-PROJECT_BUCKET = "aws-health-ai-data-3b2f0d9f09215b58379c9aabbd"
+PROJECT_BUCKET = os.environ["PROJECT_BUCKET"]
 
 sagemaker_session = Session(
     boto_session=boto_session,

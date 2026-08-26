@@ -10,12 +10,21 @@ from pipelines.evaluation_step import build_evaluation_step
 from pipelines.registry_step import build_registry_step
 
 
-REGION = "us-east-1"
-PROJECT_BUCKET = "aws-health-ai-data-3b2f0d9f09215b58379c9aabbd"
-ROLE_ARN = "arn:aws:iam::528162482936:role/aws-health-ai-sagemaker-execution-role"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+REGION = os.environ.get("AWS_REGION", "us-east-1")
+
+PROJECT_BUCKET = os.environ["PROJECT_BUCKET"]
+
+ROLE_ARN = os.environ["SAGEMAKER_ROLE_ARN"]
+
 INSTANCE_TYPE = "ml.m5.large"
 
 PIPELINE_NAME = "aws-health-ai-heart-disease-pipeline"
+
 MODEL_PACKAGE_GROUP = "aws-health-ai-heart-disease-models"
 
 AUC_THRESHOLD = 0.80

@@ -1,15 +1,19 @@
 import json
 import boto3
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 INPUT_FILE = "rag/chunks.json"
 OUTPUT_FILE = "rag/chunks_with_embeddings.json"
 
-session = boto3.Session(
-    profile_name="cristhian-dev",
-    region_name="us-east-1",
-)
 
+session = boto3.Session(
+    region_name=REGION,
+)
 bedrock = session.client("bedrock-runtime")
 
 with open(INPUT_FILE, "r", encoding="utf-8") as f:

@@ -2,15 +2,19 @@ import json
 import boto3
 import requests
 from requests_aws4auth import AWS4Auth
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
-ENDPOINT = "https://x16m2ax2gmt70fgkred6.aoss.us-east-1.on.aws"
+REGION = os.environ.get("AWS_REGION", "us-east-1")
+ENDPOINT = os.environ["OPENSEARCH_ENDPOINT"]
+
 INDEX = "heart-disease-guidelines"
 INPUT_FILE = "rag/chunks_with_embeddings.json"
 
 session = boto3.Session(
-    profile_name="cristhian-dev",
-    region_name="us-east-1",
+    region_name=REGION,
 )
 
 credentials = session.get_credentials().get_frozen_credentials()
@@ -18,7 +22,7 @@ credentials = session.get_credentials().get_frozen_credentials()
 auth = AWS4Auth(
     credentials.access_key,
     credentials.secret_key,
-    "us-east-1",
+    REGION,
     "aoss",
     session_token=credentials.token,
 )

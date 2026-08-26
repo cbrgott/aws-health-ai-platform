@@ -6,3 +6,6 @@ boto3
 sagemaker==3.19.0
 requests
 requests-aws4auth
+fastapi
+uvicorn
+python-dotenv

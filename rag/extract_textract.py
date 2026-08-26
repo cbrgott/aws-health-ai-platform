@@ -1,11 +1,16 @@
 import json
-import boto3
+import os
 
-JOB_ID = "0fa40e6c77f9499387d99b2aecd4de59311e31d1c0d40bc7cb8aa5ccb8d99ac4"
+import boto3
+from dotenv import load_dotenv
+
+load_dotenv()
+
+REGION = os.environ.get("AWS_REGION", "us-east-1")
+JOB_ID = os.environ["TEXTRACT_JOB_ID"]
 
 session = boto3.Session(
-    profile_name="cristhian-dev",
-    region_name="us-east-1",
+    region_name=REGION,
 )
 
 textract = session.client("textract")

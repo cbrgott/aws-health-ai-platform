@@ -3,10 +3,13 @@ import argparse
 import boto3
 import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
-PROFILE = "cristhian-dev"
-REGION = "us-east-1"
+PROFILE = os.environ.get("AWS_PROFILE")
+REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 BASELINE_FILE = "data/monitoring/train_features.csv"
 

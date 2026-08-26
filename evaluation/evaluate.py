@@ -4,16 +4,20 @@ from app.guardrails import check_input
 from rag.rag import ask_rag
 import uuid
 import boto3
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DATASET_PATH = Path("evaluation/evaluation_dataset.json")
-HARNESS_ARN = (
-    "arn:aws:bedrock-agentcore:us-east-1:528162482936:"
-    "harness/aws_health_ai_clinical_agent-p2P0cxPLoQ"
-)
+
+REGION = os.environ.get("AWS_REGION", "us-east-1")
+PROFILE = os.environ.get("AWS_PROFILE")
+HARNESS_ARN = os.environ["AGENTCORE_HARNESS_ARN"]
 
 session = boto3.Session(
-    profile_name="cristhian-dev",
-    region_name="us-east-1",
+    profile_name=PROFILE,
+    region_name=REGION,
 )
 
 agentcore = session.client("bedrock-agentcore")

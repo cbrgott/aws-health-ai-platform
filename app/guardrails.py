@@ -1,12 +1,20 @@
+import os
 import boto3
 
+from dotenv import load_dotenv
 
-REGION = "us-east-1"
-GUARDRAIL_ID = "t5j8b0cx9xse"
-GUARDRAIL_VERSION = "DRAFT"
+load_dotenv()
+
+REGION = os.environ.get("AWS_REGION", "us-east-1")
+
+GUARDRAIL_ID = os.environ.get("GUARDRAIL_ID")
+
+GUARDRAIL_VERSION = os.environ.get(
+    "GUARDRAIL_VERSION",
+    "DRAFT"
+)
 
 session = boto3.Session(
-    profile_name="cristhian-dev",
     region_name=REGION,
 )
 

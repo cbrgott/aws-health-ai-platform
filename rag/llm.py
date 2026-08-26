@@ -1,9 +1,12 @@
-import boto3
+import os
 
+import boto3
+from dotenv import load_dotenv
+
+REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 session = boto3.Session(
-    profile_name="cristhian-dev",
-    region_name="us-east-1",
+    region_name=REGION,
 )
 
 bedrock = session.client("bedrock-runtime")
