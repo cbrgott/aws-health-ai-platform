@@ -41,21 +41,7 @@ jobs:
       - name: Validate Python imports
         run: |
           python -m compileall app rag evaluation
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
-          aws-region: us-east-1
-
-      - name: Run tests
-        run: |
-          pytest -v
-
-      - name: Run evaluation
-        run: |
-          python -m evaluation.evaluate
-
+          
       - name: Show OIDC subject
         shell: bash
         run: |
@@ -81,3 +67,18 @@ jobs:
           print("aud:", claims.get("aud"))
           print("sub:", claims.get("sub"))
           PY
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Run tests
+        run: |
+          pytest -v
+
+      - name: Run evaluation
+        run: |
+          python -m evaluation.evaluate
+
