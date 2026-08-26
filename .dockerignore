@@ -1,7 +1,15 @@
 .venv/
+.venv-wsl/
+
 __pycache__/
 *.pyc
+
 .git/
 .gitignore
+
+.env
+.env.*
+!.env.example
+
 *.zip
 agent/**/package/
