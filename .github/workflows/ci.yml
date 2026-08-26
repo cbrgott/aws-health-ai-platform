@@ -76,7 +76,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest -v
+          python -m pytest -v
 
       - name: Run evaluation
         run: |
