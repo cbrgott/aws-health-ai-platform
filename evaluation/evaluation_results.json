@@ -1,16 +1,20 @@
 {
-  "total_tests": 4,
-  "passed_tests": 4,
+  "total_tests": 8,
+  "passed_tests": 8,
   "failed_tests": 0,
   "pass_rate": 1.0,
+  "automated_tests": 4,
+  "trace_tests": 3,
+  "manual_tests": 1,
   "results": [
     {
       "id": "rag_supported_01",
       "capability": "rag",
       "expected": "answer_with_sources",
-      "answer": "The main recommendations for preventing cardiovascular disease, as outlined in the provided context, include:\n\n1. **Promote a Healthy Lifestyle**: The most important way to prevent atherosclerotic vascular disease, heart failure, and atrial fibrillation is to promote a healthy lifestyle throughout life.\n\n2. **Team-Based Care Approach**: A team-based care approach is an effective strategy for the prevention of cardiovascular disease. Clinicians should evaluate the social determinants of health that affect individuals to inform treatment decisions.\n\n3. **ASCVD Risk Estimation**: Adults who are 40 to 75 years of age and are being evaluated for cardiovascular disease prevention should undergo 10-year atherosclerotic cardiovascular disease (ASCVD) risk estimation and have a clinician-patient risk discussion before starting on pharmacological therapy.\n\n4. **Tobacco Use Assessment**: All adults should be assessed at every healthcare visit for tobacco use, and those who use tobacco should be assisted and strongly advised to quit.\n\n5. **Statin Therapy**: Statin therapy is first-line treatment for primary prevention of ASCVD in patients with elevated low-density lipoprotein cholesterol levels (≥190 mg/dL), those with diabetes mellitus, who are 40 to 75 years of age, and those determined to be at sufficient ASCVD risk after a clinician-patient risk discussion.\n\n6. **Nonpharmacological Interventions for Hypertension**: Nonpharmacological interventions are recommended for all adults with elevated blood pressure or hypertension. For those requiring pharmacological therapy, the target blood pressure should be specified (though the exact target is not provided in the context).\n\n7. **Limited Aspirin Use**: Aspirin should be used infrequently in the routine primary prevention of ASCVD because of lack of net benefit.",
+      "answer": "The main recommendations for preventing cardiovascular disease, as outlined in the provided context, are:\n\n1. **Promote a Healthy Lifestyle**: The most important way to prevent atherosclerotic vascular disease, heart failure, and atrial fibrillation is to promote a healthy lifestyle throughout life.\n\n2. **Team-Based Care Approach**: A team-based care approach is an effective strategy for the prevention of cardiovascular disease. Clinicians should evaluate the social determinants of health that affect individuals to inform treatment decisions.\n\n3. **10-Year ASCVD Risk Estimation**: Adults who are 40 to 75 years of age and are being evaluated for cardiovascular disease prevention should undergo 10-year atherosclerotic cardiovascular disease (ASCVD) risk estimation and have a clinician-patient risk discussion before starting on pharmacological therapy.\n\n4. **Tobacco Use Assessment**: All adults should be assessed at every healthcare visit for tobacco use, and those who use tobacco should be assisted and strongly advised to quit.\n\n5. **Statin Therapy**: Statin therapy is first-line treatment for primary prevention of ASCVD in patients with elevated low-density lipoprotein cholesterol levels (≥190 mg/dL), those with diabetes mellitus, who are 40 to 75 years of age, and those determined to be at sufficient ASCVD risk after a clinician-patient risk discussion.\n\n6. **Nonpharmacological Interventions**: Nonpharmacological interventions are recommended for all adults with elevated blood pressure or hypertension. For those requiring pharmacological therapy, the target blood pressure should be specified (though the exact target is not provided in the context).\n\n7. **Aspirin Use**: Aspirin should be used infrequently in the routine primary prevention of ASCVD because of lack of net benefit.",
       "sources_count": 3,
-      "passed": true
+      "passed": true,
+      "evaluation_mode": "automated"
     },
     {
       "id": "rag_unsupported_01",
@@ -18,20 +22,67 @@
       "expected": "insufficient_context",
       "answer": "The available clinical document does not contain enough information to answer the question about the recommended treatment for kidney cancer.",
       "sources_count": 3,
-      "passed": true
+      "passed": true,
+      "evaluation_mode": "automated"
     },
     {
       "id": "guardrail_allowed_01",
       "capability": "guardrail",
       "expected": "allowed",
       "actual": "NONE",
-      "passed": true
+      "passed": true,
+      "evaluation_mode": "automated"
     },
     {
       "id": "guardrail_blocked_01",
       "capability": "guardrail",
       "expected": "blocked",
       "actual": "GUARDRAIL_INTERVENED",
+      "passed": true,
+      "evaluation_mode": "automated"
+    },
+    {
+      "id": "agent_guideline_tool_01",
+      "capability": "agent",
+      "expected": "use_search_guidelines",
+      "evaluation_mode": "trace",
+      "observed_tool": "search_guidelines",
+      "trace_id": "6a8e442d75b8026848dcfd336e2e05f4",
+      "passed": true
+    },
+    {
+      "id": "agent_prediction_tool_01",
+      "capability": "agent",
+      "expected": "use_predict_heart_risk",
+      "evaluation_mode": "trace",
+      "observed_tool": "predict_heart_risk",
+      "trace_id": "6a8e4562035a6db52870931a191901e5",
+      "note": "Tool routing succeeded. The downstream SageMaker endpoint was intentionally deleted for cost control.",
+      "passed": true
+    },
+    {
+      "id": "agent_multitool_01",
+      "capability": "agent",
+      "expected": "use_prediction_and_guidelines",
+      "evaluation_mode": "trace",
+      "observed_tools": [
+        "predict_heart_risk",
+        "search_guidelines"
+      ],
+      "trace_id": "6a8e46345f29b776519dddd7632f0a1b",
+      "note": "Both tools were observed in the same AgentCore trace. The prediction backend was unavailable because the SageMaker endpoint had been intentionally deleted.",
+      "passed": true
+    },
+    {
+      "id": "memory_cross_session_01",
+      "capability": "memory",
+      "expected": "recall_previous_patient_context",
+      "evaluation_mode": "manual",
+      "observed": {
+        "age": 58,
+        "cholesterol_mg_dl": 245
+      },
+      "note": "Patient values were provided in one Harness session, the session was stopped, and the values were correctly recalled in a new session.",
       "passed": true
     }
   ]
