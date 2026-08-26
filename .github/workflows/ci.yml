@@ -16,6 +16,13 @@ jobs:
       contents: read
       id-token: write
 
+    env:
+      AWS_REGION: us-east-1
+      AGENTCORE_HARNESS_ARN: ${{ secrets.AGENTCORE_HARNESS_ARN }}
+      GUARDRAIL_ID: ${{ secrets.GUARDRAIL_ID }}
+      GUARDRAIL_VERSION: DRAFT
+      OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,22 +42,16 @@ jobs:
         run: |
           python -m compileall app rag evaluation
 
-      - name: Run tests
-        run: |
-          pytest -v
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
           aws-region: us-east-1
 
+      - name: Run tests
+        run: |
+          pytest -v
+
       - name: Run evaluation
-        env:
-          AWS_REGION: us-east-1
-          AGENTCORE_HARNESS_ARN: ${{ secrets.AGENTCORE_HARNESS_ARN }}
-          GUARDRAIL_ID: ${{ secrets.GUARDRAIL_ID }}
-          GUARDRAIL_VERSION: DRAFT
-          OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
         run: |
           python -m evaluation.evaluate
