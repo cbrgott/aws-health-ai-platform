@@ -45,3 +45,8 @@ awscliv2.zip
 # Lambda deployment artifacts
 agent/**/package/
 agent/**/*.zip
+
+# RAG generated artifacts
+rag/textract_pages.json
+rag/chunks.json
+rag/chunks_with_embeddings.json

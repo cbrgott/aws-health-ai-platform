@@ -10,6 +10,5 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
-  profile = "cristhian-dev"
+  region = var.aws_region
 }

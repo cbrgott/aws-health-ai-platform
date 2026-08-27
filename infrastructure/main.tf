@@ -1,27 +1,27 @@
 resource "aws_s3_bucket" "health_ai_data" {
-  bucket_prefix = "aws-health-ai-data-"
+  bucket_prefix = var.s3_bucket_prefix
 
   tags = {
-    Project     = "aws-health-ai-platform"
-    Environment = "dev"
+    Project     = var.project_name
+    Environment = var.environment
     ManagedBy   = "terraform"
   }
 }
 
 resource "aws_ecr_repository" "health_ai_api" {
-  name                 = "aws-health-ai-api"
+  name                 = var.ecr_repository_name
   image_tag_mutability = "MUTABLE"
   image_scanning_configuration {
     scan_on_push = true
   }
   tags = {
-    Project     = "aws-health-ai-platform"
-    Environment = "dev"
+    Project     = var.project_name
+    Environment = var.environment
     ManagedBy   = "terraform"
   }
 }
 resource "aws_iam_role" "sagemaker_execution" {
-  name = "aws-health-ai-sagemaker-execution-role"
+  name = var.sagemaker_execution_role_name
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -40,8 +40,8 @@ resource "aws_iam_role" "sagemaker_execution" {
   })
 
   tags = {
-    Project     = "aws-health-ai-platform"
-    Environment = "dev"
+    Project     = var.project_name
+    Environment = var.environment
     ManagedBy   = "terraform"
   }
 }
