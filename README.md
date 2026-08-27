@@ -1,6 +1,6 @@
 # AWS Health AI Platform
 
-An end-to-end **MLOps and Agentic AI healthcare platform** built with Amazon SageMaker, Amazon Bedrock, Bedrock AgentCore, OpenSearch Serverless, FastAPI, Docker, and CI/CD.
+An end-to-end **MLOps and Agentic AI healthcare platform** built with Amazon SageMaker, Amazon Bedrock, Bedrock AgentCore, OpenSearch Serverless, FastAPI, Docker, Terraform, and CI/CD.
 
 The platform combines a machine learning heart disease risk model with Retrieval-Augmented Generation (RAG) over cardiovascular clinical guidelines and an AI agent capable of orchestrating both capabilities.
 
@@ -109,21 +109,7 @@ python rag/embed_chunks.py
 python rag/index_chunks.py
 ```
 
-The ingestion flow is:
-
-```text
-PDF in S3
- ↓
-Amazon Textract
- ↓
-Extracted Document
- ↓
-38 Chunks
- ↓
-Titan Embeddings
- ↓
-OpenSearch Serverless
-```
+The ingestion process generates local intermediate artifacts such as extracted pages, chunks, and embeddings. These generated files are excluded from Git and can be recreated by running the ingestion pipeline.
 
 ---
 
@@ -150,7 +136,7 @@ OpenSearch Serverless
 | Authentication | GitHub OIDC |
 | Image Registry | Amazon ECR |
 | Cloud | Amazon ECS / AWS Fargate |
-| Infrastructure | Terraform |
+| Infrastructure as Code | Terraform |
 
 ---
 
@@ -177,6 +163,10 @@ aws-health-ai-platform/
 │   └── evaluation.json
 │
 ├── infrastructure/
+│   ├── main.tf
+│   ├── outputs.tf
+│   ├── providers.tf
+│   └── variables.tf
 │
 ├── pipelines/
 │
@@ -235,10 +225,16 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Configure AWS credentials:
+Configure an AWS CLI profile:
 
 ```powershell
-aws configure --profile cristhian-dev
+aws configure --profile <your-profile>
+```
+
+Set the profile for the current PowerShell session:
+
+```powershell
+$env:AWS_PROFILE="<your-profile>"
 ```
 
 Configure the required environment variables for Bedrock, AgentCore, Guardrails, and OpenSearch.
@@ -307,7 +303,63 @@ Health:  http://127.0.0.1:8000/health
 
 ## 3. AWS Deployment
 
-The cloud deployment is automated through GitHub Actions.
+### Infrastructure
+
+Core AWS infrastructure is defined with Terraform under:
+
+```text
+infrastructure/
+```
+
+The Terraform configuration provisions the project S3 bucket, ECR repository, SageMaker execution role, and associated IAM policies.
+
+Configuration values are defined in:
+
+```text
+infrastructure/variables.tf
+```
+
+The defaults include:
+
+```text
+Region:      us-east-1
+Environment: dev
+Project:     aws-health-ai-platform
+ECR:         aws-health-ai-api
+```
+
+Initialize Terraform:
+
+```powershell
+cd infrastructure
+terraform init
+```
+
+Select your local AWS CLI profile:
+
+```powershell
+$env:AWS_PROFILE="<your-profile>"
+```
+
+Validate the configuration:
+
+```powershell
+terraform fmt
+terraform validate
+terraform plan
+```
+
+Provision the infrastructure when deploying a new environment:
+
+```powershell
+terraform apply
+```
+
+Return to the project root after the infrastructure is ready.
+
+### Application Deployment
+
+Application deployment is automated through GitHub Actions.
 
 Commit and push to `master`:
 
@@ -347,7 +399,7 @@ Swagger: https://<ecs-api-url>/docs
 Health:  https://<ecs-api-url>/health
 ```
 
-External users accessing the deployed API do not need an AWS account, AWS credentials, Python, Docker, or the AWS CLI.
+External users accessing an existing deployed API do not need an AWS account, AWS credentials, Python, Docker, or the AWS CLI.
 
 ---
 
@@ -495,6 +547,8 @@ http://127.0.0.1:8000
 
 
 AWS CLOUD
+Terraform Infrastructure
+        ↓
 Git Push
    ↓
 CI
