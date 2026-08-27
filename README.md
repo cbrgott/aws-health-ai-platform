@@ -29,9 +29,13 @@ Registered Model
 ### RAG Ingestion
 
 ```text
-Clinical PDF
+Clinical Guideline PDF
  ↓
-Document Extraction
+Amazon S3
+ ↓
+Amazon Textract
+ ↓
+Extracted Text
  ↓
 Chunking
  ↓
@@ -92,20 +96,29 @@ The source document is not stored in this repository.
 
 [View the official ACC guideline](https://www.acc.org/-/media/Non-Clinical/Files-PDFs-Excel-MS-Word-etc/Guidelines/2019/B19193-Prevention-GMS-Tool.pdf)
 
-To reproduce the RAG pipeline, download the guideline and place it in:
+To reproduce the RAG knowledge base:
 
-```text
-data/acc_aha_guidelines_made_simple.pdf
+1. Download the guideline from the official ACC source.
+2. Upload the PDF to the project Amazon S3 bucket.
+3. Run the ingestion pipeline:
+
+```powershell
+python rag/extract_textract.py
+python rag/chunk_documents.py
+python rag/embed_chunks.py
+python rag/index_chunks.py
 ```
 
-The document can then be processed through the RAG ingestion pipeline:
+The ingestion flow is:
 
 ```text
-PDF
+PDF in S3
  ↓
-Extraction
+Amazon Textract
  ↓
-Chunking
+Extracted Document
+ ↓
+38 Chunks
  ↓
 Titan Embeddings
  ↓
@@ -127,8 +140,10 @@ OpenSearch Serverless
 | Embeddings | Amazon Titan Embeddings |
 | Agent | Amazon Bedrock AgentCore |
 | Vector Database | Amazon OpenSearch Serverless |
+| Document Extraction | Amazon Textract |
 | Guardrails | Amazon Bedrock Guardrails |
 | Serverless Tools | AWS Lambda |
+| Object Storage | Amazon S3 |
 | Containers | Docker |
 | Testing | Pytest |
 | CI/CD | GitHub Actions |
@@ -152,7 +167,6 @@ aws-health-ai-platform/
 │   └── search_guidelines/
 │
 ├── data/
-│   └── acc_aha_guidelines_made_simple.pdf
 │
 ├── deployment/
 │   ├── deploy.py
@@ -185,8 +199,6 @@ aws-health-ai-platform/
 └── README.md
 ```
 
-The guideline PDF is downloaded locally and is not tracked in the repository.
-
 ---
 
 # Run the Project
@@ -208,7 +220,7 @@ The project can run in three ways:
 - AWS credentials
 - Required AWS services
 - Required environment variables
-- Clinical guideline downloaded to `data/`
+- RAG knowledge base indexed in OpenSearch Serverless
 
 Create and activate the virtual environment:
 
@@ -229,15 +241,9 @@ Configure AWS credentials:
 aws configure --profile cristhian-dev
 ```
 
-Download the clinical guideline and place it at:
-
-```text
-data/acc_aha_guidelines_made_simple.pdf
-```
-
 Configure the required environment variables for Bedrock, AgentCore, Guardrails, and OpenSearch.
 
-If the OpenSearch vector index has not been populated, run the RAG ingestion process:
+If the RAG knowledge base has not been created yet, download the clinical guideline, upload it to the project S3 bucket, and run:
 
 ```powershell
 python rag/extract_textract.py
@@ -273,7 +279,7 @@ The Docker image packages the FastAPI application while the required AWS service
 - AWS credentials
 - Required AWS services
 - Required environment variables
-- OpenSearch vector index populated with the clinical guideline
+- RAG knowledge base indexed in OpenSearch Serverless
 
 Build the Docker image:
 
@@ -439,6 +445,12 @@ Docker images are tagged with the Git commit SHA for deployment traceability.
 
 ```text
 AWS
+│
+├── Amazon S3
+│   └── Clinical Guideline PDF
+│
+├── Amazon Textract
+│   └── Document Extraction
 │
 ├── Amazon SageMaker
 │   ├── ML Pipeline
